@@ -112,7 +112,7 @@ class _TelaContatoFormularioEstado extends State<TelaContatoFormulario> {
                 inputFormatters: [
                   FilteringTextInputFormatter.digitsOnly,
                   MaskedInputFormatter(
-                      '(###) #####-####'), // Formata a entrada do telefone.
+                      '(##) #####-####'), // Formata a entrada do telefone.
                 ],                
                 keyboardType: TextInputType.phone, // Define o teclado numérico.
                 validator: (value) {

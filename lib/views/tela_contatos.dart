@@ -9,7 +9,6 @@ import 'package:flutter/services.dart';
 import 'package:agenda_hive/models/contato.dart';
 import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
 
-
 class TelaContatos extends StatefulWidget {
   const TelaContatos({super.key});
   @override
@@ -17,7 +16,8 @@ class TelaContatos extends StatefulWidget {
 }
 
 class _TelaContatosState extends State<TelaContatos> {
-  final Box<Contato> caixaContatos = Hive.box<Contato>('contatos');
+  final TextEditingController _searchController = TextEditingController();
+  String _searchTerm = '';
 
   //copiar numero para a memoria
   void _copiaNumero(String telefone) {
@@ -42,19 +42,55 @@ class _TelaContatosState extends State<TelaContatos> {
 
   @override
   Widget build(BuildContext context) {
+    final Box<Contato> caixaContatos = Hive.box<Contato>('contatos');
+
     return Scaffold(
-      appBar: AppBar(title: const Text("Agenda")),
+      appBar: AppBar(
+        title: const Text("Agenda"),
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(kToolbarHeight),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: TextField(
+              controller: _searchController,
+              decoration: InputDecoration(
+                hintText: 'Procurar Contato...',
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(8.0),
+                  borderSide: BorderSide.none,
+                ),
+                filled: true,
+                fillColor: Colors.white,
+                prefixIcon: Icon(Icons.search),
+              ),
+              onChanged: (value) {
+                setState(() {
+                  _searchTerm = value;
+                });
+              },
+            ),
+          ),
+        ),
+      ),
       body: ValueListenableBuilder(
         valueListenable:
             caixaContatos.listenable(), //execura a mudanca na caixa de contatos
         builder: (context, Box<Contato> caixa, _) {
-          if (caixa.values.isEmpty) {
+          final contatos = caixa.values
+              .where((contato) =>
+                  contato.nome != null &&
+                  contato.nome!
+                      .toLowerCase()
+                      .contains(_searchTerm.toLowerCase()))
+              .toList();
+
+          if (contatos.isEmpty) {
             return const Center(child: Text('Nenhum Contato'));
           }
           return ListView.builder(
-            itemCount: caixa.values.length,
+            itemCount: contatos.length,
             itemBuilder: (context, index) {
-              final contato = caixa.getAt(index);
+             final contato = contatos[index];
               return Slidable(
                 key: ValueKey(contato!.nome),
                 startActionPane: ActionPane(
@@ -99,7 +135,8 @@ class _TelaContatosState extends State<TelaContatos> {
                       IconButton(
                         icon: const Icon(Icons.delete),
                         onPressed: () async {
-                          final shouldDelete = await _showConfirmationDialog(context);
+                          final shouldDelete =
+                              await _showConfirmationDialog(context);
                           if (shouldDelete) {
                             contato?.delete();
                           }
@@ -122,7 +159,6 @@ class _TelaContatosState extends State<TelaContatos> {
       ),
     );
   }
-
 
   Future<bool> _showConfirmationDialog(BuildContext context) {
     return showDialog<bool>(
