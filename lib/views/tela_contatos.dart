@@ -98,8 +98,11 @@ class _TelaContatosState extends State<TelaContatos> {
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
-                        onPressed: () => {
-                          contato.delete(),
+                        onPressed: () async {
+                          final shouldDelete = await _showConfirmationDialog(context);
+                          if (shouldDelete) {
+                            contato?.delete();
+                          }
                         },
                       )
                     ],
@@ -118,5 +121,32 @@ class _TelaContatosState extends State<TelaContatos> {
         child: Icon(Icons.add),
       ),
     );
+  }
+
+
+  Future<bool> _showConfirmationDialog(BuildContext context) {
+    return showDialog<bool>(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: Text('Confirmação'),
+          content: Text('Tem certeza que deseja excluir este contato?'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(false);
+              },
+              child: Text('Cancelar'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(true);
+              },
+              child: Text('Excluir'),
+            ),
+          ],
+        );
+      },
+    ).then((value) => value ?? false);
   }
 }

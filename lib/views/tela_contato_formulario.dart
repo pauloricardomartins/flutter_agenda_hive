@@ -110,9 +110,10 @@ class _TelaContatoFormularioEstado extends State<TelaContatoFormulario> {
                 decoration:
                     const InputDecoration(labelText: 'Telefone'), // Rótulo do campo.
                 inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly,
                   MaskedInputFormatter(
-                      '(##) #####-####'), // Formata a entrada do telefone.
-                ],
+                      '(###) #####-####'), // Formata a entrada do telefone.
+                ],                
                 keyboardType: TextInputType.phone, // Define o teclado numérico.
                 validator: (value) {
                   // Valida o valor do campo.
