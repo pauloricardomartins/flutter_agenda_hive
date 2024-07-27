@@ -19,15 +19,15 @@ class _TelaContatosState extends State<TelaContatos> {
   final TextEditingController _searchController = TextEditingController();
   String _searchTerm = '';
 
-  //copiar numero para a memoria
+  // Copiar número para a memória
   void _copiaNumero(String telefone) {
     Clipboard.setData(ClipboardData(text: telefone));
     ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Número copiado com suceso!')),
+      SnackBar(content: Text('Número copiado com sucesso!')),
     );
   }
 
-  //função para abrir o whataspp
+  // Função para abrir o WhatsApp
   void _abrirWhats(String telefone) async {
     final numero = toNumericString(telefone);
     final Uri url = Uri.parse('https://wa.me/55$numero');
@@ -35,7 +35,7 @@ class _TelaContatosState extends State<TelaContatos> {
       await launchUrl(url);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Não foi posssivel abrir o WhatAapp')),
+        SnackBar(content: Text('Não foi possível abrir o WhatsApp')),
       );
     }
   }
@@ -73,15 +73,16 @@ class _TelaContatosState extends State<TelaContatos> {
         ),
       ),
       body: ValueListenableBuilder(
-        valueListenable:
-            caixaContatos.listenable(), //execura a mudanca na caixa de contatos
+        valueListenable: caixaContatos.listenable(),
         builder: (context, Box<Contato> caixa, _) {
           final contatos = caixa.values
               .where((contato) =>
-                  contato.nome != null &&
-                  contato.nome!
-                      .toLowerCase()
-                      .contains(_searchTerm.toLowerCase()))
+                  (contato.nome != null &&
+                      contato.nome!
+                          .toLowerCase()
+                          .contains(_searchTerm.toLowerCase())) ||
+                  (contato.telefone != null &&
+                      contato.telefone!.contains(_searchTerm)))
               .toList();
 
           if (contatos.isEmpty) {
@@ -90,25 +91,25 @@ class _TelaContatosState extends State<TelaContatos> {
           return ListView.builder(
             itemCount: contatos.length,
             itemBuilder: (context, index) {
-             final contato = contatos[index];
+              final contato = contatos[index];
               return Slidable(
-                key: ValueKey(contato!.nome),
+                key: ValueKey(contato.nome),
                 startActionPane: ActionPane(
                   motion: const ScrollMotion(),
                   children: [
                     SlidableAction(
-                      onPressed: (context) => _copiaNumero(contato.telefone),
+                      onPressed: (context) => _copiaNumero(contato.telefone!),
                       backgroundColor: Colors.blue,
                       foregroundColor: Colors.white,
                       icon: Icons.copy,
                       label: "Copiar",
                     ),
                     SlidableAction(
-                      onPressed: (context) => _abrirWhats(contato.telefone),
+                      onPressed: (context) => _abrirWhats(contato.telefone!),
                       backgroundColor: Colors.green,
                       foregroundColor: Colors.white,
                       icon: FontAwesomeIcons.whatsapp,
-                      label: "Copiar",
+                      label: "WhatsApp",
                     ),
                   ],
                 ),
@@ -116,20 +117,20 @@ class _TelaContatosState extends State<TelaContatos> {
                   leading: Icon(contato.ehPessoaJuridica
                       ? FontAwesomeIcons.building
                       : FontAwesomeIcons.user),
-                  title: Text(contato.nome),
-                  subtitle: Text(contato.telefone),
+                  title: Text(contato.nome!),
+                  subtitle: Text(contato.telefone!),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       IconButton(
                         icon: const Icon(Icons.edit),
-                        onPressed: () => {
+                        onPressed: () {
                           Navigator.push(
                               context,
                               MaterialPageRoute(
                                 builder: (_) =>
                                     TelaContatoFormulario(contato: contato),
-                              ))
+                              ));
                         },
                       ),
                       IconButton(
@@ -138,7 +139,7 @@ class _TelaContatosState extends State<TelaContatos> {
                           final shouldDelete =
                               await _showConfirmationDialog(context);
                           if (shouldDelete) {
-                            contato?.delete();
+                            contato.delete();
                           }
                         },
                       )
