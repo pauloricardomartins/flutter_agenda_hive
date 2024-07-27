@@ -1,8 +1,10 @@
 import 'package:hive/hive.dart';
 
+
 part 'contato.g.dart';
 
 @HiveType(typeId: 0)
+
 
 class Contato extends HiveObject {
   @HiveField(0)

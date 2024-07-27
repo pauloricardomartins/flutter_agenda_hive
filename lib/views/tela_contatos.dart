@@ -87,10 +87,11 @@ class _TelaContatosState extends State<TelaContatos> {
                         icon: const Icon(Icons.edit),
                         onPressed: () => {
                           Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (_) => TelaContatoFormulario(Contato: contato),
-                            ))
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) =>
+                                    TelaContatoFormulario(contato: contato),
+                              ))
                         },
                       ),
                       IconButton(
@@ -106,6 +107,13 @@ class _TelaContatosState extends State<TelaContatos> {
             },
           );
         },
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.push(context,
+              MaterialPageRoute(builder: (_) => TelaContatoFormulario()));
+        },
+        child: Icon(Icons.add),
       ),
     );
   }
