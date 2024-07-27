@@ -7,6 +7,8 @@ import 'package:flutter_slidable/flutter_slidable.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter/services.dart';
 import 'package:agenda_hive/models/contato.dart';
+import 'package:flutter_multi_formatter/flutter_multi_formatter.dart';
+
 
 class TelaContatos extends StatefulWidget {
   const TelaContatos({super.key});
@@ -27,7 +29,7 @@ class _TelaContatosState extends State<TelaContatos> {
 
   //função para abrir o whataspp
   void _abrirWhats(String telefone) async {
-    final numero = telefone;
+    final numero = toNumericString(telefone);
     final Uri url = Uri.parse('https://wa.me/55$numero');
     if (await canLaunchUrl(url)) {
       await launchUrl(url);
