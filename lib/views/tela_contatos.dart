@@ -40,6 +40,19 @@ class _TelaContatosState extends State<TelaContatos> {
     }
   }
 
+
+  void _ligar(String telefone) async {
+    final numero = toNumericString(telefone);
+    final Uri url = Uri(scheme: 'tel', path: numero);
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Não foi possível Ligar')),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final Box<Contato> caixaContatos = Hive.box<Contato>('contatos');
@@ -145,6 +158,7 @@ class _TelaContatosState extends State<TelaContatos> {
                       )
                     ],
                   ),
+                  onTap: () => _ligar(contato.telefone),
                 ),
               );
             },
